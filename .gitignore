@@ -129,6 +129,7 @@ Chatbot/venv/
 Chatbot/data/
 Chatbot/chroma_db/
 Chatbot/documents/
+Chatbot/Images/
 app.log
 
 # Spyder project settings
