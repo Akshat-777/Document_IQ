@@ -9,6 +9,11 @@ _env_path = Path(__file__).resolve().parents[1] / ".env"
 load_dotenv(dotenv_path=str(_env_path), override=False)
 API_URL = os.getenv("API_URL", "http://localhost:8000")
 
+# Ensure API_URL has a scheme (crucial for internal Render networking)
+if API_URL and not API_URL.startswith(("http://", "https://")):
+    # Default to internal HTTP on port 8000 if only host is provided
+    API_URL = f"http://{API_URL}:8000"
+
 def get_api_response(question, session_id, model="llama-3.3-70b-versatile"):
     headers = {'accept': 'application/json', 'Content-Type': 'application/json'}
     data = {"question": question, "model": model}
