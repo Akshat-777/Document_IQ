@@ -1,6 +1,6 @@
 from langchain_community.document_loaders import PyPDFLoader, Docx2txtLoader, UnstructuredHTMLLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_community.embeddings.fastembed import FastEmbedEmbeddings
 from langchain_chroma import Chroma
 import os
 import logging
@@ -36,7 +36,7 @@ def get_vectorstore() -> Chroma:
         logging.info(f"Initializing Chroma persist directory: {persist_dir}")
         os.makedirs(persist_dir, exist_ok=True)
 
-        embedding_function = HuggingFaceEmbeddings(model_name="all-MiniLM-L6-v2")
+        embedding_function = FastEmbedEmbeddings(model_name="BAAI/bge-small-en-v1.5")
         _vectorstore = Chroma(persist_directory=persist_dir, embedding_function=embedding_function)
         return _vectorstore
 
