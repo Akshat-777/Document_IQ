@@ -11,6 +11,53 @@ DocumentIQ is a sophisticated Retrieval-Augmented Generation (RAG) chatbot desig
 - **Hybrid Storage**: Combines MongoDB for chat history & metadata with ChromaDB for high-performance vector search.
 - **Scalable Backend**: Powered by FastAPI for robust and efficient API handling.
 
+## 🧩 System Architecture
+
+![DocumentIQ Architecture Visualization](assets/architecture_diagram.png)
+
+DocumentIQ implements a high-performance Retrieval-Augmented Generation (RAG) pipeline designed for speed and accuracy.
+
+### 🔄 Architecture Flowchart
+
+```mermaid
+graph TD
+    %% Ingestion Phase
+    A[User Uploads Documents] --> B[Temporarily Save Files]
+    B --> C{Document Loader}
+    C -->|PDF| D[PyPDFLoader]
+    C -->|DOCX| E[Docx2txtLoader]
+    C -->|HTML| F[UnstructuredHTMLLoader]
+    
+    D & E & F --> G[Recursive Text Splitting]
+    G -->|Text Chunks| H[HuggingFace Embeddings]
+    H -->|Vectors| I[(ChromaDB Vector Store)]
+    G -->|Metadata| J[(MongoDB Records)]
+
+    %% Retrieval Phase
+    K[User Enters Query] --> L{History-Aware Retriever}
+    M[(Chat History - MongoDB)] --> L
+    L -->|Standalone Question| N[Embedded Query]
+    N --> O[Similarity Search]
+    I --> O
+    O -->|Relevant Chunks| P[Contextualized Prompt]
+
+    %% Generation Phase
+    P --> Q[LLM - Llama 3.3 via Groq]
+    Q --> R[Generated Response]
+    R --> S[Display in Streamlit]
+    R --> T[(Store Logs in MongoDB)]
+```
+
+### ⚙️ How it Works
+
+1.  **Ingestion & Vectorization**: Uploaded files are chunked into 1000-character segments with overlap. These chunks are embedded using HuggingFace's `all-MiniLM-L6-v2` and stored in **ChromaDB**.
+2.  **Conversational Retrieval**: The system is "history-aware." It uses chat logs from **MongoDB** to contextualize user queries, ensuring follow-up questions (e.g., "Why?") are understood correctly.
+3.  **High-Speed Generation**: We utilize **Llama 3.3 (70B) on Groq Cloud** for near-instant inference, synthesizing the retrieved context into a clear and accurate final response.
+
+> [!TIP]
+> **Hybrid Database Strategy**: We use **ChromaDB** for specialized vector search and **MongoDB** for persistent storage of chat history, file metadata, and conversation logs.
+
+
 ## 🛠️ Technology Stack
 
 - **Frontend**: [Streamlit](https://streamlit.io/)
