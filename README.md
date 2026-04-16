@@ -109,6 +109,4 @@ DocumentIQ-RAG-Chatbot/
 │       └── pydantic_models.py # Request/response data models
 ```
 
-## 🚀 Deployment
 
-This project includes a `render.yaml` for deployment on [Render](https://render.com/). See the deployment configuration for details on hosting both the FastAPI backend and Streamlit frontend.
