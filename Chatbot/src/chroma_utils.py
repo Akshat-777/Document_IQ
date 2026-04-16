@@ -3,6 +3,7 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.embeddings.fastembed import FastEmbedEmbeddings
 from langchain_chroma import Chroma
 import os
+import gc
 import logging
 import threading
 
@@ -44,7 +45,7 @@ from typing import List
 from langchain_core.documents import Document
 
 # Initialize text splitter (lightweight; safe to do eagerly)
-text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=300, length_function=len)
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=100, length_function=len)
 
 # Document loading and splitting
 def load_and_split_document(file_path: str) -> List[Document]:
@@ -84,6 +85,7 @@ def index_document_to_chroma(file_path: str, file_id: str) -> bool:
         logging.info(f"Adding {len(splits)} documents to Chroma vector store")
         vectorstore.add_documents(splits)
         logging.info(f"Successfully indexed {len(splits)} documents to Chroma")
+        gc.collect() # Release memory after indexing spike
         logging.info(f"Chroma collection count after indexing: {vectorstore._collection.count()}")
         return True
     except Exception as e:

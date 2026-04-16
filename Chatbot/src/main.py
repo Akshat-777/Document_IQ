@@ -2,8 +2,9 @@ from fastapi import FastAPI, File, UploadFile, HTTPException
 from src.pydantic_models import QueryInput, QueryResponse, DocumentInfo, DeleteFileRequest
 from src.langchain_utils import get_rag_chain
 from src.db_utils import insert_application_logs, get_chat_history, get_all_documents, insert_document_record, delete_document_record
-from src.chroma_utils import index_document_to_chroma, delete_doc_from_chroma
+from src.chroma_utils import index_document_to_chroma, delete_doc_from_chroma, get_vectorstore
 import os
+import gc
 import uuid
 import logging
 import shutil
@@ -81,6 +82,7 @@ def upload_and_index_document(file: UploadFile = File(...)):
     finally:
         if os.path.exists(temp_file_path):
             os.remove(temp_file_path)
+        gc.collect() # Force memory cleanup after heavy indexing
 
 # List documents endpoint
 @app.get("/list-docs", response_model=list[DocumentInfo])
