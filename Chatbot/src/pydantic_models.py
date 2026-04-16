@@ -1,19 +1,16 @@
 from pydantic import BaseModel, Field
-from enum import Enum
 from datetime import datetime
-
-class ModelName(str, Enum):
-    GEMINI_2_0_FLASH = "gemini-2.0-flash"
 
 class QueryInput(BaseModel):
     question: str
-    session_id: str = Field(default=None)
-    model: ModelName = Field(default=ModelName.GEMINI_2_0_FLASH)
+    session_id: str | None = Field(default=None)
+    # Groq model name (e.g. "llama3-70b-8192", "mixtral-8x7b-32768", etc.)
+    model: str = Field(default="llama-3.3-70b-versatile")
 
 class QueryResponse(BaseModel):
     answer: str
     session_id: str
-    model: ModelName
+    model: str
 
 class DocumentInfo(BaseModel):
     id: str   # changed from int → str

@@ -1,32 +1,12 @@
 import streamlit as st
-import speech_recognition as sr
 from src.api_utils import get_api_response
-import tempfile
-import os
 
-
-
-# === Audio transcription ===
-def transcribe_audio_file(uploaded_file):
-    recognizer = sr.Recognizer()
-
-    # Save uploaded WAV file to a temporary file
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as temp_wav:
-        temp_wav.write(uploaded_file.read())
-        temp_wav_path = temp_wav.name
-
-    # Transcribe the WAV file
-    with sr.AudioFile(temp_wav_path) as source:
-        audio_data = recognizer.record(source)
-        text = recognizer.recognize_google(audio_data)
-
-    return text
 
 
 def display_chat_interface():
     
-    st.markdown("<h2 style='color: red;'>Voice/Text Chat Assistant</h2>", unsafe_allow_html=True)
-    st.markdown("<h4 style='color: orange;'>Upload Audio or Type a Query</h4>", unsafe_allow_html=True)
+    st.markdown("<h2 style='color: red;'>Chat Assistant</h2>", unsafe_allow_html=True)
+    st.markdown("<h4 style='color: orange;'>Type a Query</h4>", unsafe_allow_html=True)
 
 
     # Initialize session state
@@ -35,7 +15,7 @@ def display_chat_interface():
     if "session_id" not in st.session_state:
         st.session_state.session_id = None
     if "model" not in st.session_state:
-        st.session_state.model = "gemini-1.5-flash"
+        st.session_state.model = "llama-3.3-70b-versatile"
 
     # Display chat history
     for message in st.session_state.messages:
@@ -44,12 +24,6 @@ def display_chat_interface():
 
    
     prompt = None
-
-    # === Upload audio file (.wav or .mp3) ===
-    uploaded_audio = st.file_uploader("Upload a .wav file", type=["wav"])
-    if uploaded_audio:
-        with st.spinner("Transcribing audio..."):
-            prompt = transcribe_audio_file(uploaded_audio)
 
     # === Text input ===
     if text_input := st.chat_input("Type your query here"):

@@ -18,18 +18,22 @@ app = FastAPI()
 @app.post("/chat", response_model=QueryResponse)
 def chat(query_input: QueryInput):
     session_id = query_input.session_id or str(uuid.uuid4())
-    logging.info(f"Session ID: {session_id}, User Query: {query_input.question}, Model: {query_input.model.value}")
+    logging.info(f"Session ID: {session_id}, User Query: {query_input.question}, Model: {query_input.model}")
 
-    chat_history = get_chat_history(session_id)
-    rag_chain = get_rag_chain(query_input.model.value)
-    answer = rag_chain.invoke({
-        "input": query_input.question,
-        "chat_history": chat_history
-    })['answer']
+    try:
+        chat_history = get_chat_history(session_id)
+        rag_chain = get_rag_chain(query_input.model)
+        answer = rag_chain.invoke({
+            "input": query_input.question,
+            "chat_history": chat_history
+        })['answer']
 
-    insert_application_logs(session_id, query_input.question, answer, query_input.model.value)
-    logging.info(f"Session ID: {session_id}, AI Response: {answer}")
-    return QueryResponse(answer=answer, session_id=session_id, model=query_input.model)
+        insert_application_logs(session_id, query_input.question, answer, query_input.model)
+        logging.info(f"Session ID: {session_id}, AI Response: {answer}")
+        return QueryResponse(answer=answer, session_id=session_id, model=query_input.model)
+    except Exception as e:
+        logging.error(f"Session ID: {session_id}, Error during chat: {str(e)}")
+        raise HTTPException(status_code=503, detail=f"AI service temporarily unavailable: {str(e)}")
 
 # Document upload endpoint
 @app.post("/upload-doc")
@@ -82,3 +86,8 @@ def delete_document(request: DeleteFileRequest):
             return {"error": f"Deleted from Chroma but failed to delete document with file_id {request.file_id} from the database."}
     else:
         return {"error": f"Failed to delete document with file_id {request.file_id} from Chroma."}
+
+if __name__ == "__main__":
+    import uvicorn
+    # When run directly, start the uvicorn server
+    uvicorn.run("src.main:app", host="0.0.0.0", port=8000, reload=True)

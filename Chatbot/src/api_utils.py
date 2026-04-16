@@ -3,10 +3,13 @@ import os
 import requests
 import streamlit as st
 
-load_dotenv()
+# Load .env deterministically relative to Chatbot/ directory
+from pathlib import Path
+_env_path = Path(__file__).resolve().parents[1] / ".env"
+load_dotenv(dotenv_path=str(_env_path), override=False)
 API_URL = os.getenv("API_URL", "http://localhost:8000")
 
-def get_api_response(question, session_id, model="gemini-1.5-flash"):
+def get_api_response(question, session_id, model="llama-3.3-70b-versatile"):
     headers = {'accept': 'application/json', 'Content-Type': 'application/json'}
     data = {"question": question, "model": model}
     if session_id:

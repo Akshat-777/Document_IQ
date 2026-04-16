@@ -5,8 +5,10 @@ from dotenv import load_dotenv
 import os
 import logging
 from bson.objectid import ObjectId
-# Load environment variables
-load_dotenv()
+# Load environment variables deterministically from Chatbot/.env
+from pathlib import Path
+_env_path = Path(__file__).resolve().parents[1] / ".env"
+load_dotenv(dotenv_path=str(_env_path), override=False)
 DB_URI = os.getenv("DB_URI")
 DB_NAME = os.getenv("DB_NAME")
 
