@@ -8,11 +8,25 @@ import uuid
 import logging
 import shutil
 
-# Set up logging
-logging.basicConfig(filename='app.log', level=logging.INFO)
+import sys
+
+# Set up logging to console (stdout)
+logging.basicConfig(stream=sys.stdout, 
+                    level=logging.INFO,
+                    format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Initialize FastAPI app
 app = FastAPI()
+
+# Eager Loading: Load models on startup so they are ready for the first request
+@app.on_event("startup")
+async def startup_event():
+    logging.info("Starting up service: Pre-loading AI models and Vector Store...")
+    try:
+        get_vectorstore()
+        logging.info("AI models and Vector Store loaded successfully!")
+    except Exception as e:
+        logging.error(f"Error during startup: {str(e)}")
 
 # Chat endpoint
 @app.post("/chat", response_model=QueryResponse)

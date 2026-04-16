@@ -6,8 +6,10 @@ import os
 import logging
 import threading
 
-# Set up logging to app.log in the project root
-logging.basicConfig(filename=os.path.join(os.path.dirname(__file__), "..", "..", "app.log"), 
+import sys
+
+# Set up logging to console (stdout) for visibility in Render/Production
+logging.basicConfig(stream=sys.stdout, 
                     level=logging.INFO, 
                     format='%(asctime)s - %(levelname)s - %(message)s')
 
