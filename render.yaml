@@ -10,6 +10,8 @@ services:
     envVars:
       - key: PORT
         value: 8000
+      - key: PYTHON_VERSION
+        value: "3.11.10"
       - key: DB_URI
         sync: false
       - key: DB_NAME
@@ -31,6 +33,8 @@ services:
     envVars:
       - key: PORT
         value: 8501
+      - key: PYTHON_VERSION
+        value: "3.11.10"
       # Automatically link the frontend to the backend URL
       - key: API_URL
         fromService:
