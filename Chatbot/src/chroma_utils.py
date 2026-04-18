@@ -82,10 +82,18 @@ def index_document_to_chroma(file_path: str, file_id: str) -> bool:
             split.metadata['file_id'] = file_id
             logging.debug(f"Added metadata file_id={file_id} to chunk: {split.page_content[:50]}...")
 
-        logging.info(f"Adding {len(splits)} documents to Chroma vector store")
-        vectorstore.add_documents(splits)
+        logging.info(f"Adding {len(splits)} documents to Chroma vector store in memory-safe batches")
+        batch_size = 25  # strictly limit batch size to preserve 512MB RAM constraint
+        total_batches = (len(splits) + batch_size - 1) // batch_size
+        
+        for i in range(0, len(splits), batch_size):
+            batch_splits = splits[i : i + batch_size]
+            logging.info(f"Indexing batch {i // batch_size + 1} of {total_batches}")
+            vectorstore.add_documents(batch_splits)
+            gc.collect()  # force clear memory buffers after each ML embedding execution
+            
         logging.info(f"Successfully indexed {len(splits)} documents to Chroma")
-        gc.collect() # Release memory after indexing spike
+        gc.collect() # Release memory after full indexing sequence
         logging.info(f"Chroma collection count after indexing: {vectorstore._collection.count()}")
         return True
     except Exception as e:
