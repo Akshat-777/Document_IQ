@@ -133,6 +133,13 @@ cd Chatbot
 streamlit run src/streamlit_app.py
 ```
 
+## ☁️ Deployment
+
+This project includes a native `render.yaml` Blueprint for highly optimized deployment onto the **Render Cloud Network** architecture. The deployment strategies implemented include:
+- **Service Discovery**: Seamless internal routing between the FastAPI backend and Streamlit frontend using Render's `hostport` protocol.
+- **Resource Constraints**: Implements `MALLOC_ARENA_MAX` glibc tuning and ML chunk micro-batching (25 chunks at a time with manual garbage collection) to smoothly execute NLP models under rigorous free-tier memory constraints (512MB RAM).
+- **Automated Sync**: Automatically orchestrates API endpoints safely across public internet boundaries without triggering DDoS rate limits.
+
 ## 📂 Project Structure
 
 ```
