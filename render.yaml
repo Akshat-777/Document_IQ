@@ -46,4 +46,4 @@ services:
         fromService:
           name: fastapi-backend
           type: web
-          property: host
+          property: hostport
