@@ -19,6 +19,11 @@ logging.basicConfig(stream=sys.stdout,
 # Initialize FastAPI app
 app = FastAPI()
 
+# Root endpoint for health check
+@app.get("/")
+def read_root():
+    return {"status": "ok", "message": "DocumentIQ API is running."}
+
 # Eager Loading: Load models on startup so they are ready for the first request
 @app.on_event("startup")
 async def startup_event():

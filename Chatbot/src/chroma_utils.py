@@ -37,7 +37,7 @@ def get_vectorstore() -> Chroma:
         logging.info(f"Initializing Chroma persist directory: {persist_dir}")
         os.makedirs(persist_dir, exist_ok=True)
 
-        embedding_function = FastEmbedEmbeddings(model_name="BAAI/bge-small-en-v1.5")
+        embedding_function = FastEmbedEmbeddings(model_name="BAAI/bge-small-en-v1.5", threads=1)
         _vectorstore = Chroma(persist_directory=persist_dir, embedding_function=embedding_function)
         return _vectorstore
 
